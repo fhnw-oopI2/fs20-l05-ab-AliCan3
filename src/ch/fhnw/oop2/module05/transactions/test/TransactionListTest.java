@@ -91,7 +91,6 @@ class TransactionListTest {
 	void testTraders()  {
 		// when
 		List<Trader> traders = transactionList.traders("Basel");
-
 		// then
 		assertEquals(3, traders.size());
 
