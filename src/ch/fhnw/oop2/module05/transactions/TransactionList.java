@@ -1,7 +1,11 @@
 package ch.fhnw.oop2.module05.transactions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class implements a list of transactions performed by the traders over time.
@@ -27,8 +31,14 @@ public final class TransactionList {
 	 * @param year The year
 	 * @return All transactions made in this year
 	 */
+	
 	public List<Transaction> transactionsInYear(int year) {
-        return null;
+		List  <Transaction> s = allTransactions.stream()
+		.filter(l -> l.getYear() == year)
+		.sorted(Comparator.comparing(Transaction::getValue))
+        .collect(Collectors.toList())
+        ;
+		return s;
     }
 
 	// TODO: AB03
@@ -38,7 +48,12 @@ public final class TransactionList {
 	 * @return The cities
 	 */
 	public List<String> cities() {
-        return null;
+        List<String> s = allTransactions.stream()
+        		.map(Transaction::getTrader)
+        		.map(Trader::getCity)
+        		.distinct()
+        		.collect(Collectors.toList());        
+		return s;
     }
 
 	// TODO: AB04
@@ -49,7 +64,13 @@ public final class TransactionList {
 	 * @return All traders from given city sorted by name
 	 */
 	public List<Trader> traders(String city) {
-        return null;
+		List<Trader> s = allTransactions.stream()
+				.map(Transaction::getTrader)
+				.filter(l-> l.getCity() == city)
+				.distinct()
+				.sorted(Comparator.comparing(Trader::getName))
+				.collect(Collectors.toList());
+        return s;
     }
 
 	// TODO: AB05
@@ -60,7 +81,11 @@ public final class TransactionList {
 	 * @return True if there are any trader based in given city
 	 */
 	public boolean traderInCity(String city) {
-		return false;
+		Boolean s = allTransactions.stream()
+				.map(Transaction::getTrader)
+				.anyMatch(l -> l.getCity() == city)
+				; 
+		return s;
 	}
 
 	// TODO: AB06
@@ -71,7 +96,11 @@ public final class TransactionList {
 	 * @param to   the trader's new city
 	 */
 	public void relocateTraders(String from, String to) {
-	}
+		Stream<Transaction> s = allTransactions.stream();
+				s.map(Transaction::getTrader)
+				.filter(l -> l.getCity() == from)
+				.forEach(l -> l.setCity(to));
+		}
 
 	// TODO: AB07
 	/**
@@ -80,6 +109,9 @@ public final class TransactionList {
 	 * @return the highest value in all the transactions
 	 */
 	public int highestValue() {
-        return 0;
+		int h = allTransactions.stream()
+				.mapToInt(Transaction::getValue)
+				.max().orElseThrow(NoSuchElementException::new);
+        return h;
 	}
 }
